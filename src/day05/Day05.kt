@@ -7,9 +7,13 @@ fun main() {
     val input = readInput(parent = "src/day05", name = "Day05_input")
 
     println(solvePartOne(input))
+    println(solvePartTwo(input))
 }
 
-private fun solvePartOne(input: List<String>): String {
+private fun solvePartOne(input: List<String>) = solve(input, false)
+private fun solvePartTwo(input: List<String>) = solve(input, true)
+
+private fun solve(input: List<String>, partTwo: Boolean): String {
     val stacks: MutableMap<Int, LinkedList<Char>> = mutableMapOf(
         1 to LinkedList<Char>(),
         2 to LinkedList<Char>(),
@@ -36,13 +40,22 @@ private fun solvePartOne(input: List<String>): String {
         if (s.startsWith("move")) {
             val split = s.split(' ')
 
-            val fromStack = stacks[split[3].toInt()]!!
-            stacks[split[3].toInt()] = LinkedList(fromStack.dropLast(split[1].toInt()))
+            val numberOfCratesToMove = split[1].toInt()
+            val fromStackNumber = split[3].toInt()
+            val toStackNumber = split[5].toInt()
 
-            val toStack = stacks[split[5].toInt()]!!
-            toStack.addAll(fromStack.takeLast(split[1].toInt()).reversed())
-//            println(s)
-//            printStacks(stacks)
+            val fromStack = stacks[fromStackNumber]!!
+            stacks[fromStackNumber] = LinkedList(fromStack.dropLast(numberOfCratesToMove))
+
+            val toStack = stacks[toStackNumber]!!
+            val cratesToMove = fromStack.takeLast(numberOfCratesToMove)
+            toStack.addAll(
+                if (partTwo) {
+                    cratesToMove
+                } else {
+                    cratesToMove.reversed()
+                }
+            )
         }
     }
 
@@ -51,11 +64,4 @@ private fun solvePartOne(input: List<String>): String {
         res += it.last
     }
     return res
-}
-
-private fun printStacks(stacks: MutableMap<Int, LinkedList<Char>>) {
-    stacks.forEach {
-        println("${it.key}: ${it.value}")
-    }
-    println()
 }
