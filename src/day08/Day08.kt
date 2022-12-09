@@ -1,29 +1,92 @@
 package day08
 
 import readInput
+import java.lang.Integer.max
 
 fun main() {
     val input = readInput(parent = "src/day08", name = "Day08_input")
 
     println(solvePartOne(input))
+    println(solvePartTwo(input))
+}
+
+private fun solvePartTwo(input: List<String>): Int {
+    val treeRows = mutableListOf<MutableList<Int>>()
+
+    var highestScenicScore = 0
+
+    for (l in input) {
+        val row = mutableListOf<Int>()
+        for (c in l) {
+            row.add(c.digitToInt())
+        }
+
+        treeRows.add(row)
+    }
+
+    for (rowI in 1 until treeRows.lastIndex) {
+        val row = treeRows[rowI]
+
+        for (colI in 1 until row.lastIndex) {
+            val tree = row[colI]
+
+            var scenicScore = 1
+            // Check up
+            for (z in rowI - 1 downTo 0) {
+                val t = treeRows[z][colI]
+                if (tree <= t || z == 0) {
+                    scenicScore *= rowI - z
+                    break
+                }
+            }
+
+            // Check right
+            for (z in colI + 1..row.lastIndex) {
+                val t = treeRows[rowI][z]
+                if (tree <= t || z == row.lastIndex) {
+                    scenicScore *= z - colI
+                    break
+                }
+            }
+
+            // Check down
+            for (z in rowI + 1..treeRows.lastIndex) {
+                val t = treeRows[z][colI]
+                if (tree <= t || z == treeRows.lastIndex) {
+                    scenicScore *= z - rowI
+                    break
+                }
+            }
+
+            // Check left
+            for (z in colI - 1 downTo 0) {
+                val t = treeRows[rowI][z]
+                if (tree <= t || z == 0) {
+                    scenicScore *= colI - z
+                    break
+                }
+            }
+
+            highestScenicScore = max(highestScenicScore, scenicScore)
+
+        }
+    }
+
+    return highestScenicScore
 }
 
 private fun solvePartOne(input: List<String>): Int {
     val treeRows = mutableListOf<MutableList<Int>>()
-    val minusBlocked = mutableListOf<MutableList<Char>>()
 
     var visibleTrees = 0
 
     for (l in input) {
         val row = mutableListOf<Int>()
-        val rowC = mutableListOf<Char>()
         for (c in l) {
             row.add(c.digitToInt())
-            rowC.add(c)
         }
 
         treeRows.add(row)
-        minusBlocked.add(rowC.toMutableList())
     }
 
     for ((rowI, row) in treeRows.withIndex()) {
@@ -77,39 +140,9 @@ private fun solvePartOne(input: List<String>): Int {
 
             if (blocked < 4) {
                 visibleTrees++
-            } else {
-                minusBlocked[rowI][colI] = 'B'
             }
-
-//            println("r: ${rowI}, c: ${colI}, tree: ${tree}, blocked: $blocked")
-
         }
     }
 
-    treeRows.print()
-
-    println()
-
-    minusBlocked.printChar()
     return visibleTrees
-}
-
-fun MutableList<MutableList<Int>>.print() {
-    this.forEach {
-        it.forEach {
-            print(it)
-        }
-    }
-
-    println()
-}
-
-fun MutableList<MutableList<Char>>.printChar() {
-    this.forEach {
-        it.forEach {
-            print(it)
-        }
-    }
-
-    println()
 }
