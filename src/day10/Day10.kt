@@ -70,7 +70,3 @@ private fun calc(c: Int, x: Int) = if ((c - 20) % 40 == 0) {
 } else {
     0
 }
-
-private fun printInfo(c: Int, x: Int, l: String, signalStrengthSum: Int) {
-    println("c: $c, x: $x, l: $l, signalStrengthSum: $signalStrengthSum")
-}
